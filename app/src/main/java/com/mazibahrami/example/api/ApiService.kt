@@ -1,7 +1,7 @@
 package com.mazibahrami.example.api
 
-import com.codingwithmitch.espressodaggerexamples.models.BlogPost
-import com.codingwithmitch.espressodaggerexamples.models.Category
+import com.mazibahrami.example.models.BlogPost
+import com.mazibahrami.example.models.Category
 import retrofit2.http.GET
 import retrofit2.http.Query
 

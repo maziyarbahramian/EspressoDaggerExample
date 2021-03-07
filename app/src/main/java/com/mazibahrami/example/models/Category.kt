@@ -1,4 +1,4 @@
-package com.codingwithmitch.espressodaggerexamples.models
+package com.mazibahrami.example.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
