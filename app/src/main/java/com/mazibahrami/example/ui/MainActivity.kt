@@ -14,6 +14,7 @@ import com.mazibahrami.example.models.Category
 import com.google.android.material.appbar.AppBarLayout
 import com.mazibahrami.example.BaseApplication
 import com.mazibahrami.example.R
+import com.mazibahrami.example.databinding.ActivityMainBinding
 import com.mazibahrami.example.ui.viewmodel.*
 import com.mazibahrami.example.ui.viewmodel.state.MAIN_VIEW_STATE_BUNDLE_KEY
 import com.mazibahrami.example.ui.viewmodel.state.MainStateEvent.*
@@ -22,17 +23,16 @@ import com.mazibahrami.example.util.ERROR_STACK_BUNDLE_KEY
 import com.mazibahrami.example.util.ErrorStack
 import com.mazibahrami.example.util.ErrorState
 import com.mazibahrami.example.util.printLogD
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
 class MainActivity : AppCompatActivity(),
-    UICommunicationListener
-{
+    UICommunicationListener {
 
     private val CLASS_NAME = "MainActivity"
+    private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity(),
         (application as BaseApplication).appComponent
             .inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupActionBar()
 
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity(),
         restoreInstanceState(savedInstanceState)
     }
 
-    private fun restoreInstanceState(savedInstanceState: Bundle?){
+    private fun restoreInstanceState(savedInstanceState: Bundle?) {
         savedInstanceState?.let { inState ->
             (inState[MAIN_VIEW_STATE_BUNDLE_KEY] as MainViewState?)?.let { viewState ->
                 viewModel.setViewState(viewState)
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(),
         outState.putParcelable(
             MAIN_VIEW_STATE_BUNDLE_KEY,
             viewModel.getCurrentViewStateOrNew()
-            )
+        )
         outState.putParcelableArrayList(
             ERROR_STACK_BUNDLE_KEY,
             viewModel.errorStack
@@ -84,9 +85,9 @@ class MainActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    private fun subscribeObservers(){
+    private fun subscribeObservers() {
         viewModel.viewState.observe(this, Observer { viewState ->
-            if(viewState != null){
+            if (viewState != null) {
 //                uiCommunicationListener.displayMainProgressBar(viewModel.areAnyJobsActive())
                 displayMainProgressBar(viewModel.areAnyJobsActive())
             }
@@ -100,10 +101,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun displayErrorMessage(errorState: ErrorState) {
-        if(!dialogs.containsKey(errorState.message)){
+        if (!dialogs.containsKey(errorState.message)) {
             dialogs.put(
                 errorState.message,
-                displayErrorDialog(errorState.message, object: ErrorDialogCallback {
+                displayErrorDialog(errorState.message, object : ErrorDialogCallback {
                     override fun clearError() {
                         viewModel.clearError(0)
                     }
@@ -113,18 +114,18 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun setupActionBar() {
-        tool_bar.setupWithNavController(
+        binding.toolBar.setupWithNavController(
             findNavController(R.id.nav_host_fragment)
         )
     }
 
-    private fun onMenuItemSelected(categories: List<Category>, menuItem: MenuItem): Boolean{
-        for(category in categories){
-            if(category.pk == menuItem.itemId){
+    private fun onMenuItemSelected(categories: List<Category>, menuItem: MenuItem): Boolean {
+        for (category in categories) {
+            if (category.pk == menuItem.itemId) {
                 viewModel.clearLayoutManagerState()
-                if(category.category_name.equals(MENU_ITEM_NAME_GET_ALL_BLOGS)){
+                if (category.category_name.equals(MENU_ITEM_NAME_GET_ALL_BLOGS)) {
                     viewModel.setStateEvent(GetAllBlogs())
-                }else{
+                } else {
                     viewModel.setStateEvent(SearchBlogsByCategory(category.category_name))
                 }
                 return true
@@ -135,39 +136,38 @@ class MainActivity : AppCompatActivity(),
 
     override fun showCategoriesMenu(categories: ArrayList<Category>) {
         printLogD(CLASS_NAME, "showCategoriesMenu: ${categories}")
-        val menu = tool_bar.menu
+        val menu = binding.toolBar.menu
         menu.clear()
         categories.add(Category(MENU_ITEM_ID_GET_ALL_BLOGS, MENU_ITEM_NAME_GET_ALL_BLOGS))
-        for((index, category) in categories.withIndex()){
-            menu.add(0, category.pk , index, category.category_name)
+        for ((index, category) in categories.withIndex()) {
+            menu.add(0, category.pk, index, category.category_name)
         }
-        tool_bar.invalidate()
-        tool_bar.setOnMenuItemClickListener { menuItem ->
+        binding.toolBar.invalidate()
+        binding.toolBar.setOnMenuItemClickListener { menuItem ->
             onMenuItemSelected(categories, menuItem)
         }
     }
 
     override fun hideCategoriesMenu() {
         printLogD(CLASS_NAME, "hideCategoriesMenu")
-        tool_bar.menu.clear()
-        tool_bar.invalidate()
+        binding.toolBar.menu.clear()
+        binding.toolBar.invalidate()
     }
 
-    override fun displayMainProgressBar(isLoading: Boolean){
-        if(isLoading){
-            main_progress_bar.visibility = View.VISIBLE
-        }
-        else{
-            main_progress_bar.visibility = View.GONE
+    override fun displayMainProgressBar(isLoading: Boolean) {
+        if (isLoading) {
+            binding.mainProgressBar.visibility = View.VISIBLE
+        } else {
+            binding.mainProgressBar.visibility = View.GONE
         }
     }
 
     override fun hideToolbar() {
-        tool_bar.visibility = View.GONE
+        binding.toolBar.visibility = View.GONE
     }
 
     override fun showToolbar() {
-        tool_bar.visibility = View.VISIBLE
+        binding.toolBar.visibility = View.VISIBLE
     }
 
     override fun hideStatusBar() {
@@ -189,8 +189,8 @@ class MainActivity : AppCompatActivity(),
         super.onDestroy()
     }
 
-    private fun cleanUpOnDestroy(){
-        for(dialog in dialogs){
+    private fun cleanUpOnDestroy() {
+        for (dialog in dialogs) {
             dialog.value.dismiss()
         }
     }

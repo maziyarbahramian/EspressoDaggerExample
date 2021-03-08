@@ -3,15 +3,16 @@ package com.mazibahrami.example.ui
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.mazibahrami.example.R
+import com.mazibahrami.example.databinding.FragmentFinalBinding
 import com.mazibahrami.example.ui.viewmodel.MainViewModel
 import com.mazibahrami.example.util.GlideManager
-import kotlinx.android.synthetic.main.fragment_final.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import java.lang.Exception
@@ -22,14 +23,26 @@ class FinalFragment
 constructor(
     private val viewModelFactory: ViewModelProvider.Factory,
     private val requestManager: GlideManager
-) : Fragment(R.layout.fragment_final) {
+) : Fragment() {
 
     private val CLASS_NAME = "DetailFragment"
 
     lateinit var uiCommunicationListener: UICommunicationListener
 
+    private var _binding: FragmentFinalBinding? = null
+    private val binding get() = _binding!!
+
     val viewModel: MainViewModel by activityViewModels {
         viewModelFactory
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentFinalBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,12 +63,17 @@ constructor(
     }
 
     private fun setImage(imageUrl: String) {
-        requestManager.setImage(imageUrl, scaling_image_view)
+        requestManager.setImage(imageUrl, binding.scalingImageView)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         setUICommunicationListener(null)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     fun setUICommunicationListener(mockUICommuncationListener: UICommunicationListener?) {

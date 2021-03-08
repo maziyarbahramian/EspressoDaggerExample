@@ -4,7 +4,9 @@ package com.mazibahrami.example.ui
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -14,12 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mazibahrami.example.models.BlogPost
 import com.mazibahrami.example.R
+import com.mazibahrami.example.databinding.FragmentListBinding
 import com.mazibahrami.example.ui.viewmodel.*
 import com.mazibahrami.example.ui.viewmodel.state.MainStateEvent.*
 import com.mazibahrami.example.ui.viewmodel.state.MainViewState
 import com.mazibahrami.example.util.GlideManager
 import com.mazibahrami.example.util.TopSpacingItemDecoration
-import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.*
 import java.lang.Exception
 
@@ -29,10 +31,9 @@ class ListFragment
 constructor(
     private val viewModelFactory: ViewModelProvider.Factory,
     private val requestManager: GlideManager
-) : Fragment(R.layout.fragment_list),
+) : Fragment(),
     BlogPostListAdapter.Interaction,
-    SwipeRefreshLayout.OnRefreshListener
-{
+    SwipeRefreshLayout.OnRefreshListener {
 
     private val CLASS_NAME = "ListFragment"
 
@@ -40,13 +41,25 @@ constructor(
 
     lateinit var listAdapter: BlogPostListAdapter
 
+    private var _binding: FragmentListBinding? = null
+    private val binding get() = _binding!!
+
     val viewModel: MainViewModel by activityViewModels {
         viewModelFactory
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swipe_refresh.setOnRefreshListener(this)
+        binding.swipeRefresh.setOnRefreshListener(this)
         initRecyclerView()
         subscribeObservers()
         initData()
@@ -57,22 +70,23 @@ constructor(
         saveLayoutManagerState()
     }
 
-    private fun saveLayoutManagerState(){
-        recycler_view.layoutManager?.onSaveInstanceState()?.let { lmState ->
+    private fun saveLayoutManagerState() {
+        binding.recyclerView.layoutManager?.onSaveInstanceState()?.let { lmState ->
             viewModel.setLayoutManagerState(lmState)
         }
     }
 
     fun restoreLayoutManager() {
         viewModel.getLayoutManagerState()?.let { lmState ->
-            recycler_view?.layoutManager?.onRestoreInstanceState(lmState)
+            binding.recyclerView.layoutManager?.onRestoreInstanceState(lmState)
         }
     }
 
-    private fun initData(){
+    private fun initData() {
         val viewState = viewModel.getCurrentViewStateOrNew()
-        if(viewState.listFragmentView.blogs == null
-            || viewState.listFragmentView.categories == null){
+        if (viewState.listFragmentView.blogs == null
+            || viewState.listFragmentView.categories == null
+        ) {
             viewModel.setStateEvent(GetAllBlogs())
             viewModel.setStateEvent(GetCategories())
         }
@@ -85,9 +99,9 @@ constructor(
      "uiCommunicationListener.hideCategoriesMenu()"
     */
     val observer: Observer<MainViewState> = Observer { viewState ->
-        if(viewState != null){
+        if (viewState != null) {
 
-            viewState.listFragmentView.let{ view ->
+            viewState.listFragmentView.let { view ->
                 view.blogs?.let { blogs ->
                     listAdapter.apply {
                         submitList(blogs)
@@ -103,26 +117,25 @@ constructor(
         }
     }
 
-    private fun displayTheresNothingHereTV(isDataAvailable: Boolean){
-        if(isDataAvailable){
-            no_data_textview.visibility = View.GONE
-        }
-        else{
-            no_data_textview.visibility = View.VISIBLE
+    private fun displayTheresNothingHereTV(isDataAvailable: Boolean) {
+        if (isDataAvailable) {
+           binding.noDataTextview.visibility = View.GONE
+        } else {
+            binding.noDataTextview.visibility = View.VISIBLE
         }
     }
 
-    private fun subscribeObservers(){
+    private fun subscribeObservers() {
         viewModel.viewState.observe(viewLifecycleOwner, observer)
     }
 
     override fun onRefresh() {
         initData()
-        swipe_refresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
     }
 
-    private fun initRecyclerView(){
-        recycler_view.apply {
+    private fun initRecyclerView() {
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@ListFragment.context)
             addItemDecoration(TopSpacingItemDecoration(30))
             listAdapter = BlogPostListAdapter(requestManager, this@ListFragment)
@@ -140,7 +153,7 @@ constructor(
         findNavController().navigate(R.id.action_listFragment_to_detailFragment)
     }
 
-    private fun removeViewStateObserver(){
+    private fun removeViewStateObserver() {
         viewModel.viewState.removeObserver(observer)
     }
 
@@ -149,17 +162,21 @@ constructor(
         setUICommunicationListener(null)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
-    fun setUICommunicationListener(mockUICommuncationListener: UICommunicationListener?){
+
+    fun setUICommunicationListener(mockUICommuncationListener: UICommunicationListener?) {
 
         // TEST: Set interface from mock
-        if(mockUICommuncationListener != null){
+        if (mockUICommuncationListener != null) {
             this.uiCommunicationListener = mockUICommuncationListener
-        }
-        else{ // PRODUCTION: if no mock, get from context
+        } else { // PRODUCTION: if no mock, get from context
             try {
                 uiCommunicationListener = (context as UICommunicationListener)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e(CLASS_NAME, "$context must implement UICommunicationListener")
             }
         }

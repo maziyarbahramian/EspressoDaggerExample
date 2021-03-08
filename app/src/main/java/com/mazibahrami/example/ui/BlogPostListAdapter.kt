@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.mazibahrami.example.models.BlogPost
 import com.mazibahrami.example.R
+import com.mazibahrami.example.databinding.LayoutBlogListItemBinding
 import com.mazibahrami.example.util.GlideManager
-import kotlinx.android.synthetic.main.layout_blog_list_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class BlogPostListAdapter(
     private val requestManager: GlideManager,
     private val interaction: Interaction? = null
-    ) :
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val CLASS_NAME = "BlogPostListAdapter"
@@ -36,12 +36,14 @@ class BlogPostListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
+        val itemBinding = LayoutBlogListItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+
         return BlogPostViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.layout_blog_list_item,
-                parent,
-                false
-            ),
+            itemBinding,
             interaction,
             requestManager
         )
@@ -79,19 +81,19 @@ class BlogPostListAdapter(
 
     class BlogPostViewHolder
     constructor(
-        itemView: View,
+        private val itemBinding: LayoutBlogListItemBinding,
         private val interaction: Interaction?,
         private val requestManager: GlideManager
-    ) : RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(item: BlogPost) = with(itemView) {
-            itemView.setOnClickListener {
+        fun bind(item: BlogPost) = with(itemBinding) {
+            root.setOnClickListener {
                 interaction?.onItemSelected(adapterPosition, item)
             }
             requestManager
-                .setImage(item.image, itemView.blog_image)
-            itemView.blog_category.text = item.category
-            itemView.blog_title.text = item.title
+                .setImage(item.image, blogImage)
+            blogCategory.text = item.category
+            blogTitle.text = item.title
         }
     }
 
@@ -101,24 +103,3 @@ class BlogPostListAdapter(
         fun restoreListPosition()
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
