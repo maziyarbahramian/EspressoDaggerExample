@@ -1,7 +1,9 @@
 package com.mazibahrami.example.di
 
 import android.app.Application
+import com.mazibahrami.example.api.FakeApiService
 import com.mazibahrami.example.fragments.MainNavHostFragment
+import com.mazibahrami.example.repository.FakeMainRepositoryImpl
 import com.mazibahrami.example.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Component
@@ -22,6 +24,10 @@ import javax.inject.Singleton
     ]
 )
 interface TestAppComponent : AppComponent {
+
+    val apiService: FakeApiService
+
+    val mainRepository: FakeMainRepositoryImpl
 
     @Component.Builder
     interface Builder {
