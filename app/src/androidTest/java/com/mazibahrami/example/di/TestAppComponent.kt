@@ -4,6 +4,7 @@ import android.app.Application
 import com.mazibahrami.example.api.FakeApiService
 import com.mazibahrami.example.fragments.MainNavHostFragment
 import com.mazibahrami.example.repository.FakeMainRepositoryImpl
+import com.mazibahrami.example.ui.DetailFragmentTest
 import com.mazibahrami.example.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Component
@@ -37,5 +38,7 @@ interface TestAppComponent : AppComponent {
 
         fun build(): TestAppComponent
     }
+
+    fun inject(detailFragmentTest: DetailFragmentTest)
 
 }

@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class FakeMainRepositoryImpl
 @Inject
 constructor() : MainRepository {
-    private lateinit var apiService: FakeApiService
+    lateinit var apiService: FakeApiService
 
     @Throws(UninitializedPropertyAccessException::class)
     override fun getBlogs(
