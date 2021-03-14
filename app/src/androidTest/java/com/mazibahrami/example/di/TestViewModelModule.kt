@@ -1,5 +1,6 @@
 package com.mazibahrami.example.di
 
+import androidx.lifecycle.ViewModelProvider
 import com.mazibahrami.example.repository.FakeMainRepositoryImpl
 import com.mazibahrami.example.viewmodels.FakeMainViewModelFactory
 import dagger.Module
@@ -18,7 +19,7 @@ object TestViewModelModule {
     @Provides
     fun provideViewModelFactory(
         mainRepositoryImpl: FakeMainRepositoryImpl
-    ): FakeMainViewModelFactory {
+    ): ViewModelProvider.Factory {
         return FakeMainViewModelFactory(mainRepositoryImpl)
     }
 }

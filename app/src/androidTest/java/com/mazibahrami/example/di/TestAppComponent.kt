@@ -5,6 +5,7 @@ import com.mazibahrami.example.api.FakeApiService
 import com.mazibahrami.example.fragments.MainNavHostFragment
 import com.mazibahrami.example.repository.FakeMainRepositoryImpl
 import com.mazibahrami.example.ui.DetailFragmentTest
+import com.mazibahrami.example.ui.ListFragmentIntegrationTests
 import com.mazibahrami.example.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Component
@@ -17,11 +18,9 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        FragmentModule::class,
-        AppModule::class,
-        InternalBindingModule::class,
-        RepositoryModule::class,
-        ViewModelModule::class
+        TestFragmentModule::class,
+        TestAppModule::class,
+        TestViewModelModule::class,
     ]
 )
 interface TestAppComponent : AppComponent {
@@ -40,5 +39,7 @@ interface TestAppComponent : AppComponent {
     }
 
     fun inject(detailFragmentTest: DetailFragmentTest)
+
+    fun inject(listFragmentIntegrationTests: ListFragmentIntegrationTests)
 
 }

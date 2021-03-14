@@ -46,7 +46,7 @@ constructor(
         val rawJson = jsonUtil.readJSONFromAsset(categoriesFileName)
         val categories = Gson().fromJson<List<Category>>(
             rawJson,
-            object : TypeToken<List<BlogPost>>() {}.type
+            object : TypeToken<List<Category>>() {}.type
         )
         delay(networkDelay)
         return categories
