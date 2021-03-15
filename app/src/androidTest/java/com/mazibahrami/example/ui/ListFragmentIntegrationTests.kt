@@ -221,6 +221,38 @@ class ListFragmentIntegrationTests : BaseMainActivityTests() {
         onView(withText("Lounging Dogs")).check(doesNotExist())
     }
 
+    @Test
+    fun isInstanceStateSavedAndRestored_onActivityDestroyed() {
+        val app = InstrumentationRegistry
+            .getInstrumentation()
+            .targetContext
+            .applicationContext as TestBaseApplication
+
+        val apiService = configureFakeApiService(
+            blogsDataSource = Constants.BLOG_POSTS_DATA_FILENAME,
+            categoriesDataSource = Constants.CATEGORIES_DATA_FILENAME,
+            networkDelay = 0L,
+            application = app
+        )
+
+        configureFakeRepository(apiService, app)
+
+        injectTest(app)
+
+        val scenario = launchActivity<MainActivity>()
+
+        onView(withId(R.id.recycler_view)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.recycler_view)).perform(
+            RecyclerViewActions.scrollToPosition<BlogPostViewHolder>(8)
+        )
+        onView(withText("Blake Posing for his Website")).check(matches(isDisplayed()))
+
+        scenario.recreate()
+
+        onView(withText("Blake Posing for his Website")).check(matches(isDisplayed()))
+    }
+
     override fun injectTest(application: TestBaseApplication) {
         (application.appComponent as TestAppComponent)
             .inject(this)
