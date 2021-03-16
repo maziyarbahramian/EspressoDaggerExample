@@ -44,4 +44,6 @@ interface TestAppComponent : AppComponent {
 
     fun inject(mainNavigationTests: MainNavigationTests)
 
+    fun inject(listFragmentNavigationTest: ListFragmentNavigationTest)
+
 }
