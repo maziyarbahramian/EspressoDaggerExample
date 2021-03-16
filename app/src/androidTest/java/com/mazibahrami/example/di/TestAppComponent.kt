@@ -4,10 +4,7 @@ import android.app.Application
 import com.mazibahrami.example.api.FakeApiService
 import com.mazibahrami.example.fragments.MainNavHostFragment
 import com.mazibahrami.example.repository.FakeMainRepositoryImpl
-import com.mazibahrami.example.ui.DetailFragmentTest
-import com.mazibahrami.example.ui.ListFragmentErrorTests
-import com.mazibahrami.example.ui.ListFragmentIntegrationTests
-import com.mazibahrami.example.ui.MainActivity
+import com.mazibahrami.example.ui.*
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,5 +41,7 @@ interface TestAppComponent : AppComponent {
     fun inject(listFragmentIntegrationTests: ListFragmentIntegrationTests)
 
     fun inject(listFragmentErrorTests: ListFragmentErrorTests)
+
+    fun inject(mainNavigationTests: MainNavigationTests)
 
 }
