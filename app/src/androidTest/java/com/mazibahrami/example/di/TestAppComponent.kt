@@ -5,6 +5,7 @@ import com.mazibahrami.example.api.FakeApiService
 import com.mazibahrami.example.fragments.MainNavHostFragment
 import com.mazibahrami.example.repository.FakeMainRepositoryImpl
 import com.mazibahrami.example.ui.DetailFragmentTest
+import com.mazibahrami.example.ui.ListFragmentErrorTests
 import com.mazibahrami.example.ui.ListFragmentIntegrationTests
 import com.mazibahrami.example.ui.MainActivity
 import dagger.BindsInstance
@@ -41,5 +42,7 @@ interface TestAppComponent : AppComponent {
     fun inject(detailFragmentTest: DetailFragmentTest)
 
     fun inject(listFragmentIntegrationTests: ListFragmentIntegrationTests)
+
+    fun inject(listFragmentErrorTests: ListFragmentErrorTests)
 
 }
