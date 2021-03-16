@@ -78,7 +78,9 @@ constructor(
 
     fun restoreLayoutManager() {
         viewModel.getLayoutManagerState()?.let { lmState ->
-            binding.recyclerView.layoutManager?.onRestoreInstanceState(lmState)
+            _binding?.let {
+                binding.recyclerView.layoutManager?.onRestoreInstanceState(lmState)
+            }
         }
     }
 
@@ -119,7 +121,7 @@ constructor(
 
     private fun displayTheresNothingHereTV(isDataAvailable: Boolean) {
         if (isDataAvailable) {
-           binding.noDataTextview.visibility = View.GONE
+            binding.noDataTextview.visibility = View.GONE
         } else {
             binding.noDataTextview.visibility = View.VISIBLE
         }
